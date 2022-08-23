@@ -1,3 +1,5 @@
 fastapi
 investpy
 jinja2
+numpy
+yfinance

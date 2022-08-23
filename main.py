@@ -5,6 +5,8 @@ from fastapi.templating import Jinja2Templates
 from fastapi.encoders import jsonable_encoder
 import investpy
 import numpy as np
+import yfinance as yf
+import time 
 ########################################################################################
 
 # Create `app` instance 
@@ -19,6 +21,8 @@ def root(request:Request):
 
 @app.get('/pivot-point/{interval}')
 async def get_pivot_point(base:str,quote:str,interval:str):
+    # To uppercase 
+    base, quote = base.upper(), quote.upper()
     # start Validate base and quote  
     cross = investpy.currency_crosses.get_available_currencies()
     is_valid = True if base in cross else False
@@ -37,7 +41,7 @@ async def get_pivot_point(base:str,quote:str,interval:str):
     # end Validate interval 
 
     # If all condition ok!
-    df = investpy.technical.pivot_points(name='EUR/USD', country=None, product_type='currency_cross', interval='daily')
+    df = investpy.technical.pivot_points(name=f'{quote}/{base}', country=None, product_type='currency_cross', interval=interval)
     headers = df.columns.values.tolist()
     rows = []
     for index,row in df.iterrows():
@@ -55,3 +59,35 @@ async def get_pivot_point(base:str,quote:str,interval:str):
             headers[7]:row[headers[7]]
         })
     return jsonable_encoder(rows)
+
+@app.get('/history/{interval}')
+async def get_historical(base:str,quote:str,interval:str):
+    # To uppercase 
+    base, quote = base.upper(), quote.upper()
+    """
+    no need to validate path & query parameters
+    """
+    try:
+        ticker = yf.Ticker(f'{quote}{base}=X')
+        # get historical market data
+        period = "5d" if interval in ["5m","15m","30m","60m"] else "max"
+        df = ticker.history(period=period,interval=interval)
+        # If df empty 
+        if df.empty:
+            print('empty')
+            raise HTTPException(status_code=400,detail="ticker not found")
+        df = df.reset_index()
+        head = df.columns.values.tolist()
+        candles = []
+        for index,row in df.iterrows():
+            candles.append({
+                'time': row[head[0]],
+                'open': row[head[1]],
+                'high': row[head[2]],
+                'low': row[head[3]],
+                'close': row[head[4]]
+            })
+        return candles
+    except:
+        raise HTTPException(status_code=400,detail="query or path invalid")    
+    
