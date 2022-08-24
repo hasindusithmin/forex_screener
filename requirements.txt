@@ -3,3 +3,5 @@ investpy
 jinja2
 numpy
 yfinance
+ta-lib-bin
+pandas

@@ -6,6 +6,8 @@ from fastapi.encoders import jsonable_encoder
 import investpy
 import numpy as np
 import yfinance as yf
+import pandas as pd
+import talib as ta
 from datetime import datetime
 ########################################################################################
 
@@ -92,4 +94,38 @@ async def get_historical(base:str,quote:str,interval:str):
         return candles
     except:
         raise HTTPException(status_code=400,detail="query or path invalid")    
+    
+@app.get('/pattern/{pattern}')
+async def get_pattern(pattern:str,symbol:str,timeframe:str):
+    """
+    No need to validate query and path variables
+    """
+    try:
+        symbol = f'{symbol}=X'
+        available = ['CDL3OUTSIDE','CDL3INSIDE','CDLINVERTEDHAMMER', 'CDLHARAMICROSS' ,'CDLHARAMI' ,'CDLENGULFING','CDLDOJI','CDLDRAGONFLYDOJI' , 'CDLRISEFALL3METHODS','CDLXSIDEGAP3METHODS','CDLDOJISTAR' ,'CDLBELTHOLD','CDLADVANCEBLOCK','CDL3BLACKCROWS','CDLSHOOTINGSTAR', 'CDLSEPARATINGLINES']
+        # Going to get OHLC
+        period = "5d" if timeframe in ["5m","15m","30m","60m","1h"] else "max"
+        df = yf.Ticker(symbol).history(period=period,interval=timeframe)
+        # List -> Numpy.Array 
+        open,high,low,close = np.array(df.Open.to_list()),np.array(df.High.to_list()),np.array(df.Low.to_list()),np.array(df.Close.to_list())
+        # Pattern Result 
+        result = list(eval(f'ta.{pattern}(open,high,low,close)'))
+        # Create `mydf` DataFrame 
+        mydf = pd.DataFrame({'Time':df.index.to_list(),pattern:result})
+        # Override `mydf` 
+        mydf = mydf[mydf[pattern] != 0]
+        both = True in [e < 0 for e in mydf[pattern].to_list()]
+        if both:
+            mydf['Status'] = ['UP' if e > 0 else 'Down' for e in mydf[pattern].to_list()]
+        data = []
+        for index,row in mydf.iterrows():
+            time = row['Time'].to_pydatetime()
+            time = int(datetime.timestamp(time)) + 19800
+        if 'Status' in row.keys():
+            data.append({'time':time,'status':row['Status']})
+        else:
+            data.append({'time':time})
+        return data
+    except:
+        raise HTTPException(status_code=400,detail="Something went wrong")
     
