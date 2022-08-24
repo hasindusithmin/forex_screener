@@ -21,8 +21,16 @@ app.mount('/public', StaticFiles(directory='static'), name='static')
 templates = Jinja2Templates(directory='templates')
 
 @app.get('/')
-def root(request:Request):
+def get_home_page(request:Request):
     return templates.TemplateResponse('index.html', {'request':request})
+
+@app.get('/overview')
+def get_overview_page(request:Request):
+    return templates.TemplateResponse('overview.html', {'request':request})
+
+@app.get('/calender')
+def get_calender_page(request:Request):
+    return templates.TemplateResponse('calender.html', {'request':request})
 
 @app.get('/pivot-point/{interval}')
 async def get_pivot_point(base:str,quote:str,interval:str):
