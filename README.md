@@ -7,3 +7,4 @@ foreign exchange market screener
 > - The user should be able to get an overview containing all the real-time data available for the main stocks from a country.
 > - The user should be able to get the economic calendar, which covers financial events and indicators from all over the world, updated in real-time.
 > - The user should be able to see pivot point values in the candlestick chart.
+> - The user should be able to see candlestick patterns on the chart.

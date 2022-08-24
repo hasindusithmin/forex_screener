@@ -6,7 +6,7 @@ from fastapi.encoders import jsonable_encoder
 import investpy
 import numpy as np
 import yfinance as yf
-import time 
+from datetime import datetime
 ########################################################################################
 
 # Create `app` instance 
@@ -80,8 +80,10 @@ async def get_historical(base:str,quote:str,interval:str):
         head = df.columns.values.tolist()
         candles = []
         for index,row in df.iterrows():
+            time = row[head[0]].to_pydatetime()
+            time = datetime.timestamp(time)
             candles.append({
-                'time': row[head[0]],
+                'time': int(time + 19800),
                 'open': row[head[1]],
                 'high': row[head[2]],
                 'low': row[head[3]],
