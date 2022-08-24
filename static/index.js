@@ -96,8 +96,8 @@ function autocomplete(inp, arr) {
 }
 
 fetch('/public/currencies.json')
-	.then(res=>res.json())
-	.then(countries=>{
+	.then(res => res.json())
+	.then(countries => {
 		autocomplete(document.getElementById("currency"), countries);
 	})
 const chartOpts = {
@@ -141,7 +141,7 @@ const chart = LightweightCharts.createChart(document.getElementById('chart'), ch
 // Step ii 
 const candleSeries = chart.addCandlestickSeries(candlestickOpts);
 // Step iii 
-fetch('/history/5m?quote=EUR&base=USD')
+fetch('/history/5m?currency=EUR/USD')
 	.then(res => res.json())
 	.then(data => {
 		candleSeries.setData(data)
@@ -161,36 +161,35 @@ document.getElementById('history').onsubmit = async (e) => {
 	document.getElementById('notification').innerText = ''
 	let currency = e.target.currency.value;
 	const interval = e.target.interval.value;
-	currency = currency.replace('/','');
 	sessionStorage.setItem('currency', currency)
 	sessionStorage.setItem('interval', interval)
-	// const res = await fetch(`/history/${interval}?base=${base}&quote=${quote}`)
-	// if (res.status === 400) {
-	// 	document.getElementById('notification').className = 'w3-text-red'
-	// 	document.getElementById('notification').innerText = `No data found, symbol(${quote}/${base}) may be delisted`
-	// }
-	// if (res.ok) {
-	// 	document.getElementById('notification').className = 'w3-text-green'
-	// 	document.getElementById('notification').innerText = `${quote}/${base} ${interval}`
-	// 	document.getElementById('title').innerHTML = `${quote}/${base} ${intervals[interval]}`
-	// 	const data = await res.json()
-	// 	if (data.length < 10) alert('Lack of data')
-	// 	candleSeries.setData(data)
-	// }
+	const res = await fetch(`/history/${interval}?currency=${currency}`)
+	if (res.status === 400) {
+		document.getElementById('notification').className = 'w3-text-red'
+		document.getElementById('notification').innerText = `No data found, symbol(${quote}/${base}) may be delisted`
+	}
+	if (res.ok) {
+		document.getElementById('notification').className = 'w3-text-green'
+		document.getElementById('notification').innerText = `${currency} ${interval}`
+		document.getElementById('title').innerHTML = `${currency} ${intervals[interval]}`
+		const data = await res.json()
+		if (data.length < 10) alert('Lack of data')
+		candleSeries.setData(data)
+		document.getElementById('title').innerHTML = `${currency} ${intervals[interval]}`
+	}
 }
 
 document.getElementById('pivot-point').onsubmit = async (e) => {
 	e.preventDefault()
 	document.getElementById('pivot-point-notification').innerText = ''
-	const base = sessionStorage.getItem('base')
-	const quote = sessionStorage.getItem('quote')
+	const currency = sessionStorage.getItem('currency')
 	const interval = sessionStorage.getItem('interval')
-	if (base == undefined && quote == undefined && interval == undefined) {
+	if (currency == undefined && interval == undefined) {
 		document.getElementById('pivot-point-notification').innerText = 'First, you need to select a currency pair and need to click the submit button.'
 		document.getElementById('pivot-point-notification').className = 'w3-text-red'
 	}
 	else {
-		const res = await fetch(`/pivot-point/${intervals[interval]}?quote=${quote}&base=${base}`)
+		const res = await fetch(`/pivot-point/${intervals[interval]}?currency=${currency}`)
 
 		if (res.status == 400) {
 			document.getElementById('pivot-point-notification').innerText = 'Data does not exists'
@@ -205,7 +204,7 @@ document.getElementById('pivot-point').onsubmit = async (e) => {
 			// Step ii 
 			const candleSeries = chart.addCandlestickSeries(candlestickOpts);
 			// Step iii 
-			fetch(`/history/${interval}?quote=${quote}&base=${base}`)
+			fetch(`/history/${interval}?currency=${currency.replace('/', '')}`)
 				.then(res => res.json())
 				.then(data => {
 					candleSeries.setData(data)
@@ -244,14 +243,13 @@ document.getElementById('pivot-point').onsubmit = async (e) => {
 						lineWidth: 2,
 						lineStyle: LightweightCharts.LineStyle.Solid,
 						axisLabelVisible: true,
-						title: line.toUpperCase(),
-						visible: false
+						title: `${line.toUpperCase()} : ${type}`,
 					}
 					candleSeries.createPriceLine(opts)
 					chart.timeScale().fitContent();
 				})
 			}
-			document.getElementById('title').innerHTML = `${quote}/${base} ${intervals[interval]}`
+			document.getElementById('title').innerHTML = `${currency} ${intervals[interval]}`
 			lines = []
 		}
 	}
@@ -263,17 +261,21 @@ document.getElementById('pattern').onsubmit = async (e) => {
 	document.getElementById('pattern-notification').innerText = ''
 	const pattern = e.target.pattern.value;
 	const pivot_type = e.target.type.value;
-	const quote = sessionStorage.getItem('quote')
-	const base = sessionStorage.getItem('base')
+	const currency = sessionStorage.getItem('currency')
 	const interval = sessionStorage.getItem('interval')
-	if (quote == undefined && base == undefined && interval == undefined) {
+	if (currency == undefined && interval == undefined) {
 		document.getElementById('pattern-notification').innerText = `First, you need to select a currency pair and need to click the submit button.`
 		document.getElementById('pattern-notification').className = `w3-text-red`
 	}
 	else {
-		const pattern_res = await fetch(`/pattern/${pattern}?symbol=${quote + base}&timeframe=${interval}`)
+		fetch(`/history/${interval}?currency=${currency.replace('/', '')}`)
+			.then(res => res.json())
+			.then(data => {
+				candleSeries.setData(data)
+			})
+		const pattern_res = await fetch(`/pattern/${pattern}?symbol=${currency.replace('/', '')}&timeframe=${interval}`)
 		if (!pattern_res.ok) {
-			document.getElementById('pattern-notification').innerText = `Sorry, ${quote}/${base} data not exists`
+			document.getElementById('pattern-notification').innerText = `Sorry, ${currency} data not exists`
 		}
 		else {
 			const formData = new FormData(document.getElementById('pattern'))
@@ -283,9 +285,9 @@ document.getElementById('pattern').onsubmit = async (e) => {
 				pivots.push(name)
 			}
 			// Add pivot point to the chart 
-			const pivot_res = await fetch(`/pivot-point/${intervals[interval]}?base=${base}&quote=${quote}`)
+			const pivot_res = await fetch(`/pivot-point/${intervals[interval]}?currency=${currency}`)
 			if (!pivot_res.ok) {
-				document.getElementById('pattern-notification').innerText = `Sorry, ${quote}/${base} pivot point data not exists`
+				document.getElementById('pattern-notification').innerText = `Sorry, ${currency} pivot point data not exists`
 			}
 			else {
 				const pivot_data = await pivot_res.json()
@@ -299,19 +301,22 @@ document.getElementById('pattern').onsubmit = async (e) => {
 					document.getElementById('pattern-notification').className = 'w3-text-red'
 				}
 				else {
-					pivots.forEach(pivot => {
-						let color = (pivot.startsWith('s')) ? '#0b5be6' : '#e60b54'
-						if (pivot == 'p') color = '#f2f2eb'
-						candleSeries.createPriceLine({
-							price: required[pivot],
-							color: color,
-							lineWidth: 2,
-							lineStyle: LightweightCharts.LineStyle.Solid,
-							axisLabelVisible: true,
-							title: pivot.toUpperCase(),
-							visible: false
+					if (pivots.length != 0) {
+						pivots.forEach(pivot => {
+							let color = (pivot.startsWith('s')) ? '#0000FF' : '#FF0000'
+							if (pivot == 'p') color = '#FFFFFF'
+							const opts = {
+								price: required[pivot],
+								color: color,
+								lineWidth: 2,
+								lineStyle: LightweightCharts.LineStyle.Solid,
+								axisLabelVisible: true,
+								title: `${pivot_type} ${pivot.toUpperCase()}`,
+							}
+							candleSeries.createPriceLine(opts)
+							chart.timeScale().fitContent();
 						})
-					})
+					}
 					// Add pattern data 
 					const markers = []
 					const pattern_data = await pattern_res.json()
@@ -328,7 +333,7 @@ document.getElementById('pattern').onsubmit = async (e) => {
 						markers.push({ time: time, position: position, color: color, shape: shape, text: pattern })
 					})
 					candleSeries.setMarkers(markers)
-					chart.timeScale().fitContent();
+					document.getElementById('title').innerHTML = `${currency} ${intervals[interval]}`
 				}
 			}
 		}
