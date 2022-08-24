@@ -1,5 +1,4 @@
-
-const chart = LightweightCharts.createChart(document.getElementById('chart'), {
+const chartOpts = {
 	width: 600,
 	height: 400,
 	layout: {
@@ -24,21 +23,28 @@ const chart = LightweightCharts.createChart(document.getElementById('chart'), {
 		borderColor: 'rgba(197, 203, 206, 0.8)',
 		timeVisible: true,
 	},
-});
-const candleSeries = chart.addCandlestickSeries({
+}
+
+const candlestickOpts = {
 	upColor: 'rgba(255, 144, 0, 1)',
 	downColor: '#000',
 	borderDownColor: 'rgba(255, 144, 0, 1)',
 	borderUpColor: 'rgba(255, 144, 0, 1)',
 	wickDownColor: 'rgba(255, 144, 0, 1)',
 	wickUpColor: 'rgba(255, 144, 0, 1)',
-});
+}
 
+// Step i 
+const chart = LightweightCharts.createChart(document.getElementById('chart'), chartOpts);
+// Step ii 
+const candleSeries = chart.addCandlestickSeries(candlestickOpts);
+// Step iii 
 fetch('/history/5m?quote=EUR&base=USD')
 	.then(res => res.json())
 	.then(data => {
 		candleSeries.setData(data)
 	})
+
 
 document.getElementById('history').onsubmit = async (e) => {
 	e.preventDefault()
@@ -62,7 +68,7 @@ document.getElementById('history').onsubmit = async (e) => {
 		candleSeries.setData(data)
 	}
 }
-let priceLines = []
+
 document.getElementById('pivot-point').onsubmit = async (e) => {
 	e.preventDefault()
 	// ['5mins', '15mins', '30mins', '1hour', '5hours', 'daily', 'weekly', 'monthly']
@@ -92,6 +98,19 @@ document.getElementById('pivot-point').onsubmit = async (e) => {
 		}
 
 		else {
+			// Step 0 
+			document.getElementById('chart').innerHTML = '' 
+			// Step i 
+			const chart = LightweightCharts.createChart(document.getElementById('chart'), chartOpts);
+			// Step ii 
+			const candleSeries = chart.addCandlestickSeries(candlestickOpts);
+			// Step iii 
+			fetch(`/history/${interval}?quote=${quote}&base=${base}`)
+				.then(res => res.json())
+				.then(data => {
+					candleSeries.setData(data)
+				})
+
 			// Step 01 
 			const data = await res.json()
 			const type = e.target.type.value;
@@ -114,19 +133,6 @@ document.getElementById('pivot-point').onsubmit = async (e) => {
 				document.getElementById('pivot-point-notification').className = 'w3-text-red'
 			}
 
-			// Step 05 
-			if (priceLines.length != 0) {
-				// Not work 
-				// priceLines.forEach(priceLine=>{
-				// 	candleSeries.removePriceLine(priceLine)
-				// })
-				fetch(`/history/${interval}?quote=${quote}&base=${base}`)
-					.then(res => res.json())
-					.then(data => {
-						candleSeries.setData(data)
-					})
-			}
-
 			// Step 04 
 			if (lines.length !== 0) {
 				lines.forEach(line => {
@@ -141,16 +147,12 @@ document.getElementById('pivot-point').onsubmit = async (e) => {
 						title: line.toUpperCase(),
 						visible: false
 					}
-					priceLines.push(opts)
 					candleSeries.createPriceLine(opts)
 					chart.timeScale().fitContent();
 				})
 			}
 
 			lines = []
-
-
-
 
 		}
 	}
