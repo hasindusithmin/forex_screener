@@ -44,7 +44,15 @@ fetch('/history/5m?quote=EUR&base=USD')
 	.then(data => {
 		candleSeries.setData(data)
 	})
-
+const intervals = {
+	"5m": "5mins",
+	"15m": "15mins",
+	"30m": "30mins",
+	"1h": "1hour",
+	"1d": "daily",
+	"1wk": "weekly",
+	"1mo": "monthly"
+}
 
 document.getElementById('history').onsubmit = async (e) => {
 	e.preventDefault()
@@ -63,6 +71,7 @@ document.getElementById('history').onsubmit = async (e) => {
 	if (res.ok) {
 		document.getElementById('notification').className = 'w3-text-green'
 		document.getElementById('notification').innerText = `${quote}/${base} ${interval}`
+		document.getElementById('title').innerHTML = `${quote}/${base} ${intervals[interval]}`
 		const data = await res.json()
 		if (data.length < 10) alert('Lack of data')
 		candleSeries.setData(data)
@@ -71,16 +80,6 @@ document.getElementById('history').onsubmit = async (e) => {
 
 document.getElementById('pivot-point').onsubmit = async (e) => {
 	e.preventDefault()
-	// ['5mins', '15mins', '30mins', '1hour', '5hours', 'daily', 'weekly', 'monthly']
-	const intervals = {
-		"5m": "5mins",
-		"15m": "15mins",
-		"30m": "30mins",
-		"1h": "1hour",
-		"1d": "daily",
-		"1wk": "weekly",
-		"1mo": "monthly"
-	}
 	document.getElementById('pivot-point-notification').innerText = ''
 	const base = sessionStorage.getItem('base')
 	const quote = sessionStorage.getItem('quote')
@@ -99,7 +98,7 @@ document.getElementById('pivot-point').onsubmit = async (e) => {
 
 		else {
 			// Step 0 
-			document.getElementById('chart').innerHTML = '' 
+			document.getElementById('chart').innerHTML = ''
 			// Step i 
 			const chart = LightweightCharts.createChart(document.getElementById('chart'), chartOpts);
 			// Step ii 
@@ -151,7 +150,7 @@ document.getElementById('pivot-point').onsubmit = async (e) => {
 					chart.timeScale().fitContent();
 				})
 			}
-
+			document.getElementById('title').innerHTML = `${quote}/${base} ${intervals[interval]}`
 			lines = []
 
 		}
