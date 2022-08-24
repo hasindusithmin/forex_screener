@@ -1,6 +1,6 @@
 const chartOpts = {
-	width: 600,
-	height: 400,
+	width: 800,
+	height: 600,
 	layout: {
 		backgroundColor: '#000000',
 		textColor: 'rgba(255, 255, 255, 0.9)',

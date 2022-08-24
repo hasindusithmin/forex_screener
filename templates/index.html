@@ -12,15 +12,17 @@
 </head>
 
 <body>
-    <header>
-        <h1>header</h1>
+    <header style="padding:100px;">
+        <div class="w3-third w3-center w3-card-4 w3-green w3-wide">Home</div>
+        <div class="w3-third w3-center w3-card-4 w3-red w3-wide">Overview</div>
+        <div class="w3-third w3-center w3-card-4 w3-yellow w3-wide">Calender</div>
     </header>
-    <main style="padding: 50px ;">
+    <main style="padding:100px;">
         <div class="w3-row w3-hide-small">
             <div class="w3-half" id="chart"></div>
             <div class="w3-half">
                 <h3 id="title" class="w3-wide w3-center"></h3>
-                <div class="w3-row">
+                <div class="w3-row w3-card-4">
                     <div class="w3-third w3-padding">
                         <form action="" id="history" method="post">
                             <div id="notification"></div>
@@ -412,8 +414,8 @@
             </div>
         </div>
     </main>
-    <footer>
-        <h2>footer</h2>
+    <footer style="padding:100px;">
+        <div class="w3-center w3-wide">Powered By <img src="/public/python.png" alt="python" style="width: 16px;height:16px;"> <img src="/public/fastapi.jpeg" alt="python" style="width: 16px;height:16px;"></div>
     </footer>
     <script src="/public/index.js"></script>
 </body>
