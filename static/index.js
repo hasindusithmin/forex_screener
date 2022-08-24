@@ -159,25 +159,24 @@ const intervals = {
 document.getElementById('history').onsubmit = async (e) => {
 	e.preventDefault()
 	document.getElementById('notification').innerText = ''
-	const base = e.target.base.value;
-	const quote = e.target.quote.value;
+	let currency = e.target.currency.value;
 	const interval = e.target.interval.value;
-	sessionStorage.setItem('quote', quote)
-	sessionStorage.setItem('base', base)
+	currency = currency.replace('/','');
+	sessionStorage.setItem('currency', currency)
 	sessionStorage.setItem('interval', interval)
-	const res = await fetch(`/history/${interval}?base=${base}&quote=${quote}`)
-	if (res.status === 400) {
-		document.getElementById('notification').className = 'w3-text-red'
-		document.getElementById('notification').innerText = `No data found, symbol(${quote}/${base}) may be delisted`
-	}
-	if (res.ok) {
-		document.getElementById('notification').className = 'w3-text-green'
-		document.getElementById('notification').innerText = `${quote}/${base} ${interval}`
-		document.getElementById('title').innerHTML = `${quote}/${base} ${intervals[interval]}`
-		const data = await res.json()
-		if (data.length < 10) alert('Lack of data')
-		candleSeries.setData(data)
-	}
+	// const res = await fetch(`/history/${interval}?base=${base}&quote=${quote}`)
+	// if (res.status === 400) {
+	// 	document.getElementById('notification').className = 'w3-text-red'
+	// 	document.getElementById('notification').innerText = `No data found, symbol(${quote}/${base}) may be delisted`
+	// }
+	// if (res.ok) {
+	// 	document.getElementById('notification').className = 'w3-text-green'
+	// 	document.getElementById('notification').innerText = `${quote}/${base} ${interval}`
+	// 	document.getElementById('title').innerHTML = `${quote}/${base} ${intervals[interval]}`
+	// 	const data = await res.json()
+	// 	if (data.length < 10) alert('Lack of data')
+	// 	candleSeries.setData(data)
+	// }
 }
 
 document.getElementById('pivot-point').onsubmit = async (e) => {
