@@ -3,6 +3,7 @@ from fastapi import FastAPI,Request,HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.encoders import jsonable_encoder
+from fastapi.staticfiles import StaticFiles
 import investpy
 import numpy as np
 import yfinance as yf
@@ -13,6 +14,8 @@ from datetime import datetime
 
 # Create `app` instance 
 app = FastAPI()
+
+app.mount('/', StaticFiles(directory='static'), name='static')
 
 # Create 'templates' instance 
 templates = Jinja2Templates(directory='templates')
