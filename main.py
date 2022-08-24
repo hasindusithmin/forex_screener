@@ -15,7 +15,7 @@ from datetime import datetime
 # Create `app` instance 
 app = FastAPI()
 
-app.mount('/', StaticFiles(directory='static'), name='static')
+app.mount('/public', StaticFiles(directory='static'), name='static')
 
 # Create 'templates' instance 
 templates = Jinja2Templates(directory='templates')
@@ -75,7 +75,7 @@ async def get_historical(base:str,quote:str,interval:str):
     try:
         ticker = yf.Ticker(f'{quote}{base}=X')
         # get historical market data
-        period = "5d" if interval in ["5m","15m","30m","60m"] else "max"
+        period = "5d" if interval in ["5m","15m","30m","60m","1h"] else "max"
         df = ticker.history(period=period,interval=interval)
         # If df empty 
         if df.empty:
@@ -96,7 +96,7 @@ async def get_historical(base:str,quote:str,interval:str):
             })
         return candles
     except:
-        raise HTTPException(status_code=400,detail="query or path invalid")    
+        raise HTTPException(status_code=400,detail="ticker not found")    
     
 @app.get('/pattern/{pattern}')
 async def get_pattern(pattern:str,symbol:str,timeframe:str):
