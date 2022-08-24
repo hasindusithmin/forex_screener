@@ -122,15 +122,15 @@ async def get_pattern(pattern:str,symbol:str,timeframe:str):
         mydf = mydf[mydf[pattern] != 0]
         both = True in [e < 0 for e in mydf[pattern].to_list()]
         if both:
-            mydf['Status'] = ['UP' if e > 0 else 'Down' for e in mydf[pattern].to_list()]
+            mydf['Status'] = ['UP' if e > 0 else 'DOWN' for e in mydf[pattern].to_list()]
         data = []
         for index,row in mydf.iterrows():
             time = row['Time'].to_pydatetime()
             time = int(datetime.timestamp(time)) + 19800
-        if 'Status' in row.keys():
-            data.append({'time':time,'status':row['Status']})
-        else:
-            data.append({'time':time})
+            if 'Status' in row.keys():
+                data.append({'time':time,'status':row['Status']})
+            else:
+                data.append({'time':time})
         return data
     except:
         raise HTTPException(status_code=400,detail="Something went wrong")

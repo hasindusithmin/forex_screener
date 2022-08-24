@@ -340,7 +340,8 @@
                                 <option value="Woodie's">Woodie's</option>
                                 <option value="DeMark's">DeMark's</option>
                             </select>
-                            <div><b>Line Type</b></div>
+                            <label><b>Line Type</b></label>
+                            <br>
                             <span><b>S3</b> </span><input type="checkbox" name="s3" id="">
                             <br>
                             <span><b>S2</b> </span><input type="checkbox" name="s2" id="">
@@ -358,7 +359,55 @@
                             <input type="submit" class="w3-input">
                         </form>
                     </div>
-                    <div class="w3-third"></div>
+                    <div class="w3-third w3-padding">
+                        <form action="" method="post" id="pattern">
+                            <div id="pattern-notification"></div>
+                            <label for=""><b>Pattern</b></label>
+                            <select name="pattern" id="" class="w3-input">
+                                <option value="CDL3OUTSIDE">OUTSIDE</option>
+                                <option value="CDL3INSIDE">INSIDE</option>
+                                <option value="CDLINVERTEDHAMMER">INVERTEDHAMMER</option>
+                                <option value="CDLHARAMICROSS">HARAMICROSS</option>
+                                <option value="CDLHARAMI">HARAMI</option>
+                                <option value="CDLENGULFING">ENGULFING</option>
+                                <option value="CDLDOJI">DOJI</option>
+                                <option value="CDLDRAGONFLYDOJI">DRAGONFLYDOJI</option>
+                                <option value="CDLRISEFALL3METHODS">RISEFALL3METHODS</option>
+                                <option value="CDLXSIDEGAP3METHODS">XSIDEGAP3METHODS</option>
+                                <option value="CDLDOJISTAR">DOJISTAR</option>
+                                <option value="CDLBELTHOLD">BELTHOLD</option>
+                                <option value="CDLADVANCEBLOCK">ADVANCEBLOCK</option>
+                                <option value="CDL3BLACKCROWS">BLACKCROWS</option>
+                                <option value="CDLSHOOTINGSTAR">SHOOTINGSTAR</option>
+                                <option value="CDLSEPARATINGLINES">SEPARATINGLINES</option>
+                            </select>
+                            <label for=""><b>Pivot Point Type</b></label>
+                            <select name="type" id="" class="w3-input">
+                                <option value="Classic">Classic</option>
+                                <option value="Fibonacci">Fibonacci</option>
+                                <option value="Camarilla">Camarilla</option>
+                                <option value="Woodie's">Woodie's</option>
+                                <option value="DeMark's">DeMark's</option>
+                            </select>
+                            <label><b>S/R Lines</b></label>
+                            <br>
+                            <span><b>S3</b> </span><input type="checkbox" name="s3" id="">
+                            <br>
+                            <span><b>S2</b> </span><input type="checkbox" name="s2" id="">
+                            <br>
+                            <span><b>S1</b> </span><input type="checkbox" name="s1" id="">
+                            <br>
+                            <span><b>P0</b> </span><input type="checkbox" name="p" id="">
+                            <br>
+                            <span><b>R1</b> </span><input type="checkbox" name="r1" id="">
+                            <br>
+                            <span><b>R2</b> </span><input type="checkbox" name="r2" id="">
+                            <br>
+                            <span><b>R3</b> </span><input type="checkbox" name="r3" id="">
+                            <br>
+                            <input type="submit" class="w3-input">
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
