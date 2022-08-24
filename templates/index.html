@@ -17,13 +17,13 @@
     </header>
     <main style="padding: 50px ;">
         <div class="w3-row w3-hide-small">
-            <div class="w3-twothird" id="chart"></div>
-            <div class="w3-third">
+            <div class="w3-half" id="chart"></div>
+            <div class="w3-half">
                 <div class="w3-row">
-                    <div class="w3-half">
+                    <div class="w3-third w3-padding">
                         <form action="" id="history" method="post">
                             <div id="notification"></div>
-                            <label for="">Quote</label>
+                            <label for=""><b>Quote</b></label>
                             <select name="quote" id="" class="w3-input">
                                 <option value="AED">AED</option>
                                 <option value="AFN">AFN</option>
@@ -168,7 +168,7 @@
                                 <option value="ZAR">ZAR</option>
                                 <option value="ZMW">ZMW</option>
                             </select>
-                            <label for="">Base</label>
+                            <label for=""><b>Base</b></label>
                             <select name="base" id="" class="w3-input">
                                 <option value="AED">AED</option>
                                 <option value="AFN">AFN</option>
@@ -313,7 +313,7 @@
                                 <option value="ZAR">ZAR</option>
                                 <option value="ZMW">ZMW</option>
                             </select>
-                            <label for="">Timeframe</label>
+                            <label for=""><b>Timeframe</b></label>
                             <select name="interval" id="" class="w3-input">
                                 <option value="5m">5 Minutes</option>
                                 <option value="15m">15 Minutes</option>
@@ -328,7 +328,36 @@
                             <input type="submit" class="w3-input">
                         </form>
                     </div>
-                    <div class="w3-half"></div>
+                    <div class="w3-third w3-padding">
+                        <form action="" id="pivot-point" method="post">
+                            <div id="pivot-point-notification"></div>
+                            <label for=""><b>Pivot Point Type</b></label>
+                            <select name="type" id="" class="w3-input">
+                                <option value="Classic">Classic</option>
+                                <option value="Fibonacci">Fibonacci</option>
+                                <option value="Camarilla">Camarilla</option>
+                                <option value="Woodie's">Woodie's</option>
+                                <option value="DeMark's">DeMark's</option>
+                            </select>
+                            <div><b>Line Type</b></div>
+                            <span><b>S3</b> </span><input type="checkbox" name="s3" id="">
+                            <br>
+                            <span><b>S2</b> </span><input type="checkbox" name="s2" id="">
+                            <br>
+                            <span><b>S1</b> </span><input type="checkbox" name="s1" id="">
+                            <br>
+                            <span><b>P0</b> </span><input type="checkbox" name="p" id="">
+                            <br>
+                            <span><b>R1</b> </span><input type="checkbox" name="r1" id="">
+                            <br>
+                            <span><b>R2</b> </span><input type="checkbox" name="r2" id="">
+                            <br>
+                            <span><b>R3</b> </span><input type="checkbox" name="r3" id="">
+                            <br>
+                            <input type="submit" class="w3-input">
+                        </form>
+                    </div>
+                    <div class="w3-third"></div>
                 </div>
             </div>
         </div>
