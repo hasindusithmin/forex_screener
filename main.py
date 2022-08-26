@@ -10,7 +10,6 @@ import yfinance as yf
 import pandas as pd
 import talib as ta
 from datetime import datetime
-import uvicorn
 ########################################################################################
 
 # Create `app` instance 
@@ -145,5 +144,3 @@ async def get_pattern(pattern:str,symbol:str,timeframe:str):
     except:
         raise HTTPException(status_code=400,detail="Something went wrong")
     
-if __name__=="__main__":
-    uvicorn.run(app,host='0.0.0.0',port=8000)

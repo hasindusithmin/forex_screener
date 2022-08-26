@@ -6,3 +6,4 @@ yfinance
 ta-lib-bin
 pandas
 uvicorn
+gunicorn
