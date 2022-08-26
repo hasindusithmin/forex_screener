@@ -137,14 +137,14 @@ const candlestickOpts = {
 }
 
 // Step i 
-const chart = LightweightCharts.createChart(document.getElementById('chart'), chartOpts);
+// const chart = LightweightCharts.createChart(document.getElementById('chart'), chartOpts);
 // Step ii 
-const candleSeries = chart.addCandlestickSeries(candlestickOpts);
-// Step iii 
+// const candleSeries = chart.addCandlestickSeries(candlestickOpts);
+// // Step iii 
 fetch('/history/5m?currency=EUR/USD')
 	.then(res => res.json())
 	.then(data => {
-		candleSeries.setData(data)
+		LightweightCharts.createChart(document.getElementById('chart'), chartOpts).addCandlestickSeries(candlestickOpts).setData(data)
 	})
 const intervals = {
 	"5m": "5mins",
@@ -166,7 +166,7 @@ document.getElementById('history').onsubmit = async (e) => {
 	const res = await fetch(`/history/${interval}?currency=${currency}`)
 	if (res.status === 400) {
 		document.getElementById('notification').className = 'w3-text-red'
-		document.getElementById('notification').innerText = `No data found, symbol(${quote}/${base}) may be delisted`
+		document.getElementById('notification').innerText = `No data found, symbol(${currency}) may be delisted`
 	}
 	if (res.ok) {
 		document.getElementById('notification').className = 'w3-text-green'
@@ -174,7 +174,8 @@ document.getElementById('history').onsubmit = async (e) => {
 		document.getElementById('title').innerHTML = `${currency} ${intervals[interval]}`
 		const data = await res.json()
 		if (data.length < 10) alert('Lack of data')
-		candleSeries.setData(data)
+		document.getElementById('chart').innerHTML = ''
+		LightweightCharts.createChart(document.getElementById('chart'), chartOpts).addCandlestickSeries(candlestickOpts).setData(data)
 		document.getElementById('title').innerHTML = `${currency} ${intervals[interval]}`
 	}
 }
@@ -255,7 +256,6 @@ document.getElementById('pivot-point').onsubmit = async (e) => {
 	}
 }
 
-
 document.getElementById('pattern').onsubmit = async (e) => {
 	e.preventDefault()
 	document.getElementById('pattern-notification').innerText = ''
@@ -268,6 +268,14 @@ document.getElementById('pattern').onsubmit = async (e) => {
 		document.getElementById('pattern-notification').className = `w3-text-red`
 	}
 	else {
+		// Step 0 
+		document.getElementById('chart').innerHTML = ''
+		// Step i 
+		const chart = LightweightCharts.createChart(document.getElementById('chart'), chartOpts);
+		// Step ii 
+		const candleSeries = chart.addCandlestickSeries(candlestickOpts);
+		// Step iii 
+		
 		fetch(`/history/${interval}?currency=${currency.replace('/', '')}`)
 			.then(res => res.json())
 			.then(data => {
@@ -278,13 +286,29 @@ document.getElementById('pattern').onsubmit = async (e) => {
 			document.getElementById('pattern-notification').innerText = `Sorry, ${currency} data not exists`
 		}
 		else {
+			// Add pattern data 
+			const markers = []
+			const pattern_data = await pattern_res.json()
+			pattern_data.forEach(ptn => {
+				const { time } = ptn
+				let position = 'aboveBar'
+				let shape = 'circle'
+				let color = '#ffffff'
+				if ('status' in ptn) {
+					position = (ptn['status'] == 'UP') ? 'belowBar' : 'aboveBar'
+					shape = (ptn['status'] == 'UP') ? 'arrowUp' : 'arrowDown'
+					color = (ptn['status'] == 'UP') ? '#2196F3' : '#e91e63'
+				}
+				markers.push({ time: time, position: position, color: color, shape: shape, text: pattern })
+			})
+			candleSeries.setMarkers(markers)
+			// Add pivot point to the chart 
 			const formData = new FormData(document.getElementById('pattern'))
 			let pivots = []
 			for (let [name, value] of formData) {
 				if (name == 'pattern' || name == 'type') continue
 				pivots.push(name)
 			}
-			// Add pivot point to the chart 
 			const pivot_res = await fetch(`/pivot-point/${intervals[interval]}?currency=${currency}`)
 			if (!pivot_res.ok) {
 				document.getElementById('pattern-notification').innerText = `Sorry, ${currency} pivot point data not exists`
@@ -317,25 +341,9 @@ document.getElementById('pattern').onsubmit = async (e) => {
 							chart.timeScale().fitContent();
 						})
 					}
-					// Add pattern data 
-					const markers = []
-					const pattern_data = await pattern_res.json()
-					pattern_data.forEach(ptn => {
-						const { time } = ptn
-						let position = 'aboveBar'
-						let shape = 'circle'
-						let color = '#ffffff'
-						if ('status' in ptn) {
-							position = (ptn['status'] == 'UP') ? 'belowBar' : 'aboveBar'
-							shape = (ptn['status'] == 'UP') ? 'arrowUp' : 'arrowDown'
-							color = (ptn['status'] == 'UP') ? '#2196F3' : '#e91e63'
-						}
-						markers.push({ time: time, position: position, color: color, shape: shape, text: pattern })
-					})
-					candleSeries.setMarkers(markers)
-					document.getElementById('title').innerHTML = `${currency} ${intervals[interval]}`
 				}
 			}
+			document.getElementById('title').innerHTML = `${currency} ${intervals[interval]}`
 		}
 	}
 }
